@@ -3,10 +3,8 @@ from random import choice
 from bs4 import BeautifulSoup
 from loguru import logger
 import requests
-from aiogram import Bot, types, Router
-from main import bot
-
-channal_router = Router()
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import Command
 
 CHANNAL_ID = -1002590689329
 
@@ -23,7 +21,7 @@ async def send_random_joke():
                 else:
                     anekdot = "Не удалось получить анекдот"
 
-                await bot.send_message(CHANNAL_ID, f"Анекдот: {anekdot}")
+                await Bot.send_message(CHANNAL_ID, f"Анекдот: {anekdot}")
                 logger.info(f"Опублекован анекдот: {anekdot}")
             except Exception as e:
                 logger.error(f"Ошибка при отправке сообщения {e}")
@@ -31,3 +29,11 @@ async def send_random_joke():
             await asyncio.sleep(60)
 
 task = asyncio.create_task(send_random_joke())
+
+def setup_channel_heandlers(dp: Dispatcher, bot: Bot):
+    asyncio.create_task(send_random_joke(bot))
+
+    @dp.message(Command('channel_stats'), F.chat.type == "channel")
+    async def channel_stats(message: types.Message):
+        await message.answer("Бот канала работает!")
+        logger.info("Канал: проверка работы")
