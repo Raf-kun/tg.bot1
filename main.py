@@ -22,8 +22,6 @@ async def main():
     dp = Dispatcher()
 
     setup_channel_handlers(dp, bot)
-
-    logger.info("Бот запущен")
     try:
         await dp.start_polling(bot)
     finally:
